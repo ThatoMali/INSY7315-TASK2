@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>SANParks FRIMS — Field Ranger &amp; Incident Management System</title>
+<link rel="icon" href="sanparks-logo.png" />
+<link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
+<link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+<!-- ================= LOGIN SCREEN ================= -->
+<section id="login-screen" class="screen active">
+  <div class="login-card">
+    <div class="brand">
+      <div class="brand-mark"><img src="sanparks-logo.png" alt="SANParks Logo" class="login-logo"></div>
+      <h1>SANParks FRIMS</h1>
+      <p>Field Ranger &amp; Incident Management System</p>
+    </div>
+
+    <form id="login-form">
+      <label for="login-user">Username</label>
+      <input id="login-user" type="text" autocomplete="username" autocapitalize="none" spellcheck="false" required />
+
+      <label for="login-pass">Password</label>
+      <input id="login-pass" type="password" autocomplete="current-password" required />
+
+      <p id="login-error" class="form-error" role="alert"></p>
+      <button id="login-btn" type="submit" class="primary-btn">Sign In</button>
+    </form>
+
+    <label class="demo-label">Demo accounts — tap to fill</label>
+    <div class="role-picker" id="demo-accounts">
+      <button type="button" class="role-btn" data-user="t.nkosi" data-pass="Ranger@123">
+        <strong>Field Ranger</strong><span>Log incidents in the field</span>
+      </button>
+      <button type="button" class="role-btn" data-user="s.mahlangu" data-pass="Ranger@123">
+        <strong>Section Ranger</strong><span>Monitor &amp; manage incidents</span>
+      </button>
+      <button type="button" class="role-btn" data-user="ecologist" data-pass="Eco@123">
+        <strong>Regional Ecologist</strong><span>Cross-section analytics</span>
+      </button>
+      <button type="button" class="role-btn" data-user="admin" data-pass="Admin@123">
+        <strong>System Administrator</strong><span>Accounts, roles &amp; audit</span>
+      </button>
+    </div>
+    <p class="hint">Demo build — remove the demo accounts before real use.</p>
+  </div>
+</section>
+
+<!-- ================= RANGER (MOBILE) APP ================= -->
+<section id="ranger-screen" class="screen">
+  <div class="mobile-frame">
+    <header class="mobile-header">
+      <button type="button" id="logout-btn-ranger" class="back-btn" title="Sign out" aria-label="Sign out">⏻</button>
+      <h2>Log Incident</h2>
+      <span id="sync-status" class="sync-pill offline">● Offline</span>
+    </header>
+
+    <form id="incident-form" class="mobile-body">
+      <label for="inc-type">Incident type</label>
+      <select id="inc-type">
+        <option>Snare found</option>
+        <option>Poaching activity</option>
+        <option>Fence breach</option>
+        <option>Wildlife sighting</option>
+        <option>Injured animal</option>
+        <option>Carcass found</option>
+        <option>Vehicle in restricted area</option>
+        <option>Other</option>
+      </select>
+
+      <label for="inc-gps">GPS location</label>
+      <div class="gps-row">
+        <input id="inc-gps" type="text" placeholder="-25.10230, 31.51820" inputmode="text" autocomplete="off" />
+        <button type="button" id="get-gps-btn" class="gps-btn">📍 Locate</button>
+      </div>
+
+      <label for="inc-photo">Photo</label>
+      <label for="inc-photo" class="photo-btn" id="photo-label">[ Attach Photo ]</label>
+      <input id="inc-photo" type="file" accept="image/*" capture="environment" hidden />
+
+      <label>AI severity tag</label>
+      <div id="ai-tag" class="ai-tag ai-idle">Awaiting input…</div>
+
+      <label for="inc-notes">Notes</label>
+      <textarea id="inc-notes" rows="3" maxlength="4000" placeholder="Fresh wire snare near waterhole…"></textarea>
+
+      <button type="submit" id="submit-btn" class="submit-btn">SUBMIT</button>
+      <p id="form-msg" class="form-msg" role="status"></p>
+    </form>
+
+    <nav class="mobile-tabs">
+      <button type="button" class="mobile-tab active" data-tab="log" title="Log Incident"><span class="tab-icon">📝</span><span class="tab-label">Log</span></button>
+      <button type="button" class="mobile-tab" data-tab="mine" title="My Reports"><span class="tab-icon">📋</span><span class="tab-label">My Reports</span></button>
+      <button type="button" class="mobile-tab" data-tab="profile" title="Profile"><span class="tab-icon">👤</span><span class="tab-label">Profile</span></button>
+    </nav>
+  </div>
+</section>
+
+<!-- ================= RANGER: MY REPORTS ================= -->
+<section id="submissions-screen" class="screen">
+  <div class="mobile-frame">
+    <header class="mobile-header">
+      <button type="button" id="logout-btn-mine" class="back-btn" title="Sign out" aria-label="Sign out">⏻</button>
+      <h2>My Reports</h2>
+      <span id="sync-status-mine" class="sync-pill offline">● Offline</span>
+    </header>
+    <div id="my-list" class="mobile-list"></div>
+    <nav class="mobile-tabs">
+      <button type="button" class="mobile-tab" data-tab="log" title="Log Incident"><span class="tab-icon">📝</span><span class="tab-label">Log</span></button>
+      <button type="button" class="mobile-tab active" data-tab="mine" title="My Reports"><span class="tab-icon">📋</span><span class="tab-label">My Reports</span></button>
+      <button type="button" class="mobile-tab" data-tab="profile" title="Profile"><span class="tab-icon">👤</span><span class="tab-label">Profile</span></button>
+    </nav>
+  </div>
+</section>
+
+<!-- ================= DASHBOARD (section ranger / ecologist / admin) ================= -->
+<section id="dashboard-screen" class="screen">
+  <header class="dash-header">
+    <div>
+      <h1>Incident Dashboard — <span id="dash-section">—</span></h1>
+      <p class="dash-user">Signed in as <strong id="dash-user-name">—</strong> · <span id="dash-role">—</span></p>
+    </div>
+    <div class="dash-actions">
+      <select id="scope-select" class="ghost-select" aria-label="Section filter" hidden></select>
+      <button type="button" id="refresh-btn" class="ghost-btn">↻ Refresh</button>
+      <button type="button" id="export-csv" class="ghost-btn">Export CSV</button>
+      <button type="button" id="export-pdf" class="ghost-btn">Export PDF</button>
+      <button type="button" id="users-btn" class="ghost-btn" hidden>👥 Users</button>
+      <button type="button" id="audit-btn" class="ghost-btn" hidden>🧾 Audit log</button>
+      <button type="button" class="ghost-btn profile-nav-btn" id="dash-profile-btn">👤 Profile</button>
+      <button type="button" id="logout-btn-dash" class="ghost-btn danger">Sign out</button>
+    </div>
+  </header>
+
+  <div class="stats-grid">
+    <div class="stat-card"><div class="stat-num" id="stat-open">0</div><div class="stat-label">Open</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-escalated">0</div><div class="stat-label">Escalated</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-resolved">0</div><div class="stat-label">Resolved (MTD)</div></div>
+    <div class="stat-card"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total</div></div>
+  </div>
+
+  <div class="panel" id="alerts-panel">
+    <div class="panel-head">
+      <h3>High-Severity Alerts <span id="alert-count" class="count-pill zero">0</span></h3>
+      <button type="button" id="alerts-readall" class="action-btn">Mark all read</button>
+    </div>
+    <div id="alerts-list"></div>
+  </div>
+
+  <div class="panel">
+    <h3>Live Incident Map</h3>
+    <div id="map"></div>
+  </div>
+
+  <div class="panel">
+    <h3>Incidents by Type</h3>
+    <canvas id="type-chart" height="90"></canvas>
+  </div>
+
+  <div class="panel">
+    <div class="panel-head">
+      <h3>Incident Log</h3>
+      <div class="filters">
+        <button type="button" class="filter-btn active" data-filter="all">All</button>
+        <button type="button" class="filter-btn" data-filter="Open">Open</button>
+        <button type="button" class="filter-btn" data-filter="Escalated">Escalated</button>
+        <button type="button" class="filter-btn" data-filter="Resolved">Resolved</button>
+      </div>
+      <input type="search" id="incident-search" class="search-input" placeholder="Search ref, type, notes…" aria-label="Search incidents" />
+    </div>
+    <div class="table-scroll">
+      <table class="incident-table wide">
+        <thead>
+          <tr><th>Ref</th><th>Time</th><th>Type</th><th>Severity</th><th>Status</th><th>Reported By</th><th>Location</th><th></th></tr>
+        </thead>
+        <tbody id="incident-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= USERS (admin) ================= -->
+<section id="users-screen" class="screen">
+  <button type="button" class="profile-back" data-goto="dashboard">← Back to dashboard</button>
+  <div class="screen-head">
+    <h1>User Management</h1>
+    <button type="button" id="add-user-btn" class="btn-solid">+ Add user</button>
+  </div>
+  <div class="panel">
+    <div class="table-scroll">
+      <table class="incident-table">
+        <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Section</th><th>Status</th><th></th></tr></thead>
+        <tbody id="users-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= AUDIT LOG (admin / ecologist) ================= -->
+<section id="audit-screen" class="screen">
+  <button type="button" class="profile-back" data-goto="dashboard">← Back to dashboard</button>
+  <div class="screen-head"><h1>Audit Log</h1></div>
+  <div class="panel">
+    <div class="table-scroll">
+      <table class="incident-table">
+        <thead><tr><th>Time</th><th>User</th><th>Action</th><th>Record</th></tr></thead>
+        <tbody id="audit-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- ================= PROFILE SCREEN ================= -->
+<section id="profile-screen" class="screen">
+  <div class="profile-wrap">
+    <button type="button" class="profile-back" id="profile-back">← Back</button>
+
+    <header class="profile-header">
+      <p class="eyebrow">ACCOUNT &amp; SYNC SETTINGS</p>
+      <h1>Profile</h1>
+    </header>
+
+    <div class="profile-grid">
+      <div class="profile-left">
+        <div class="card">
+          <p class="card-eyebrow" id="profile-role-eyebrow">RANGER</p>
+          <h2 class="profile-name" id="profile-name">—</h2>
+          <p class="profile-role" id="profile-role-line">—</p>
+          <p class="profile-id" id="profile-id">ID: —</p>
+        </div>
+
+        <div class="card info-card">
+          <div class="info-row"><span>App version</span><span id="info-app-version">2.0.0</span></div>
+          <div class="info-row"><span>Last sync</span><span id="info-last-sync">—</span></div>
+          <div class="info-row"><span>Pending uploads</span><span id="info-pending">0</span></div>
+        </div>
+      </div>
+
+      <div class="profile-right">
+        <p class="card-eyebrow">ACTIONS</p>
+        <div class="card actions-card">
+          <button type="button" id="sync-now-btn" class="sync-btn"><span class="sync-icon">🔄</span> Sync now</button>
+          <button type="button" id="logout-btn-profile" class="logout-btn">Log out</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ================= INCIDENT DETAIL MODAL ================= -->
+<div id="detail-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+  <div class="modal">
+    <h2 id="detail-title">Incident</h2>
+    <p class="modal-sub" id="detail-sub"></p>
+    <div id="detail-body"></div>
+    <div class="modal-actions">
+      <button type="button" id="detail-reopen" class="ghost-btn" hidden>Reopen</button>
+      <button type="button" id="detail-escalate" class="btn-solid btn-warn" hidden>Escalate</button>
+      <button type="button" id="detail-resolve" class="btn-solid" hidden>Mark resolved</button>
+      <button type="button" id="detail-close" class="ghost-btn">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= USER MODAL ================= -->
+<div id="user-modal" class="modal-backdrop" role="dialog" aria-modal="true" aria-labelledby="user-modal-title">
+  <form class="modal" id="user-form" autocomplete="off">
+    <h2 id="user-modal-title">Add User</h2>
+    <div class="form-grid">
+      <div class="full"><label for="u-name">Full name</label><input id="u-name" required maxlength="120" /></div>
+      <div><label for="u-username">Username</label><input id="u-username" required maxlength="60" autocapitalize="none" /></div>
+      <div><label for="u-email">Email</label><input id="u-email" type="email" required maxlength="120" /></div>
+      <div class="full">
+        <label for="u-password" id="u-password-label">Password</label>
+        <input id="u-password" type="password" minlength="8" maxlength="200" autocomplete="new-password" />
+        <p class="hint-line" id="u-password-hint">At least 8 characters.</p>
+      </div>
+      <div>
+        <label for="u-role">Role</label>
+        <select id="u-role">
+          <option value="field_ranger">Field Ranger</option>
+          <option value="section_ranger">Section Ranger</option>
+          <option value="ecologist">Regional Ecologist</option>
+          <option value="admin">System Administrator</option>
+        </select>
+      </div>
+      <div><label for="u-section">Section</label><select id="u-section"></select></div>
+      <div>
+        <label for="u-status">Status</label>
+        <select id="u-status"><option>Active</option><option>Invited</option><option>Inactive</option></select>
+      </div>
+    </div>
+    <p class="form-error" id="user-error" role="alert"></p>
+    <div class="modal-actions">
+      <button type="button" id="user-cancel" class="ghost-btn">Cancel</button>
+      <button type="submit" id="user-save" class="btn-solid">Save</button>
+    </div>
+  </form>
+</div>
+
+<div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+<script src="vendor/leaflet/leaflet.js"></script>
+<script src="vendor/chart.umd.js"></script>
+<script src="js/api.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
