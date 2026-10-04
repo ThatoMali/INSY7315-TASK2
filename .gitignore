@@ -1,0 +1,24 @@
+# Dependencies
+node_modules/
+
+# Environment
+.env
+.env.local
+
+# SQLite database + uploads (runtime data — do NOT commit)
+data/
+uploads/
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS / editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# Coverage / test output
+coverage/
+.nyc_output/

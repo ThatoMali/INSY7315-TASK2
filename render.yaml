@@ -1,0 +1,24 @@
+# Render Blueprint — New → Blueprint → select this repo.
+services:
+  - type: web
+    name: frims
+    runtime: node
+    plan: free
+    buildCommand: npm ci
+    startCommand: npm start
+    healthCheckPath: /api/health
+    autoDeploy: false            # deploys are triggered by the GitHub Actions workflow on main
+    envVars:
+      - key: NODE_VERSION
+        value: "22"
+      - key: NODE_ENV
+        value: production
+      - key: JWT_SECRET
+        generateValue: true
+    # The free plan has an ephemeral disk: the SQLite file and uploaded photos reset on redeploy/restart
+    # (the demo data is re-seeded automatically). For persistent data use a paid plan and add:
+    #   disk:
+    #     name: frims-data
+    #     mountPath: /var/data
+    #     sizeGB: 1
+    # plus envVars  DATA_DIR=/var/data/db  and  UPLOAD_DIR=/var/data/uploads
