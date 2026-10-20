@@ -7,7 +7,6 @@ Here is an upgraded, portfolio-ready version of your `README.md`.
 
 Node.js + Express + SQLite (better-sqlite3) + JWT, with a single-page front-end served from the same app. Includes offline-first data capture, server-side severity triage, and a built-in rule-based AI assistant.
 
-*(Caption: The Section Ranger dashboard, showing live stats, map, and alerts.)*
 
 ## 🚀 Run it (2 minutes)
 
@@ -78,7 +77,7 @@ flowchart TB
 
 ---
 
-## 🔐 Demo Accounts
+## Demo Accounts
 
 | Role                 | Username     | Password     | Lands on                          |
 |----------------------|--------------|--------------|-----------------------------------|
@@ -95,18 +94,19 @@ Others: `m.dlamini`, `k.vanwyk`, `n.zulu` (field rangers, Kruger South), `j.both
 
 ### 1. Mobile Incident Logging
 Rangers can log incidents from the field. The screen captures GPS, allows a photo upload (downscaled for weak connections), and shows a real-time AI severity tag. It is fully responsive for phone screens.
+<img width="320" height="766" alt="image" src="https://github.com/user-attachments/assets/a4248633-9eac-43fa-a217-c94a8150ad8f" />
 
-![Mobile Ranger Screen](docs/screenshots/slide6-ranger-mobile.png)
+
 
 ### 2. Automated Escalation & Alerts
 If the server-side triage detects a High severity incident, it is automatically set to *Escalated* and raises an alert for section rangers.
+<img width="299" height="283" alt="image" src="https://github.com/user-attachments/assets/90429549-9f2c-4975-bca8-11dae254910f" />
 
-![Escalated Incident and Alert](docs/screenshots/slide6-escalated-alert.png)
 
 ### 3. Audit Trail
 Every action (login, incident creation, status change, user deactivation) is logged immutably for compliance.
+<img width="898" height="630" alt="image" src="https://github.com/user-attachments/assets/21c68015-a183-4238-8909-429de56ba5be" />
 
-![Audit Log](docs/screenshots/slide6-audit.png)
 
 ---
 
@@ -126,7 +126,7 @@ Scoping is enforced **on the server** (`src/scope.js`), not just hidden in the U
 
 ---
 
-## ⚙️ How it works
+## How it works
 
 - **Severity Triage**: Calculated server-side (`src/triage.js`, rule-based: type + keywords). The client cannot choose severity or status. High → status *Escalated* and alert raised.
 - **Offline Queue**: If the network is down, reports are saved in `localStorage` and auto-synced later. A `client_id` makes retries idempotent, so nothing is duplicated.
@@ -139,7 +139,7 @@ Scoping is enforced **on the server** (`src/scope.js`), not just hidden in the U
 
 ---
 
-## 📂 Project layout
+## Project layout
 
 ```
 server.js              start-up
@@ -159,7 +159,7 @@ render.yaml            Render blueprint
 
 ---
 
-## 🔌 REST API (all JSON; except login/health need `Authorization: Bearer <token>`)
+## REST API (all JSON; except login/health need `Authorization: Bearer <token>`)
 
 | Method & path | Purpose | Roles |
 |---|---|---|
@@ -182,7 +182,6 @@ render.yaml            Render blueprint
 
 This project uses GitHub Actions for continuous integration and Render for hosting.
 
-![GitHub Actions](docs/screenshots/slide9-actions-green.png)
 
 1. Push to GitHub. CI runs tests on Node 22 and 24.
 2. In Render, choose **New → Blueprint** and select the repo (`render.yaml` configures everything; `JWT_SECRET` is generated).
