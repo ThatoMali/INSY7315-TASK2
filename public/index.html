@@ -5,13 +5,143 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>SANParks FRIMS — Field Ranger &amp; Incident Management System</title>
 <link rel="icon" href="sanparks-logo.png" />
+
+<!-- NEW FONT: Plus Jakarta Sans -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
 <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
 
+<!-- SVG SPRITE (Invisible) -->
+<svg style="display: none;" xmlns="http://www.w3.org/2000/svg">
+  <symbol id="icon-map" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></symbol>
+  <symbol id="icon-ai" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="2" ry="2"></rect><rect x="9" y="9" width="6" height="6"></rect><line x1="9" y1="1" x2="9" y2="4"></line><line x1="15" y1="1" x2="15" y2="4"></line><line x1="9" y1="20" x2="9" y2="23"></line><line x1="15" y1="20" x2="15" y2="23"></line><line x1="20" y1="9" x2="23" y2="9"></line><line x1="20" y1="14" x2="23" y2="14"></line><line x1="1" y1="9" x2="4" y2="9"></line><line x1="1" y1="14" x2="4" y2="14"></line></symbol>
+  <symbol id="icon-sos" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></symbol>
+  <symbol id="icon-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></symbol>
+  <symbol id="icon-bell" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path><path d="M13.73 21a2 2 0 0 1-3.46 0"></path></symbol>
+  <symbol id="icon-card" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></symbol>
+  <symbol id="icon-shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path></symbol>
+  <symbol id="icon-chart" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></symbol>
+  <symbol id="icon-log" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></symbol>
+  <symbol id="icon-mine" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></symbol>
+  <symbol id="icon-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></symbol>
+  <symbol id="icon-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></circle><circle cx="12" cy="13" r="4"></circle></symbol>
+  <symbol id="icon-locate" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></symbol>
+  <symbol id="icon-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></symbol>
+</svg>
+
+<!-- ================= LANDING SCREEN ================= -->
+<section id="landing-screen" class="screen active">
+  <nav class="landing-nav">
+    <div class="landing-nav-brand">
+      <img src="sanparks-logo.png" alt="SANParks logo" />
+      <div>
+        <strong>SANParks FRIMS</strong>
+        <span>Field Ranger &amp; Incident Management</span>
+      </div>
+    </div>
+    <div class="landing-nav-links">
+      <a href="#how-it-works">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#users">Users</a>
+      <button type="button" class="btn btn-primary" id="enter-system-btn">Sign In</button>
+    </div>
+  </nav>
+
+  <header class="hero">
+    <div class="hero-bg"></div>
+    <div class="hero-overlay"></div>
+    <div class="hero-inner">
+      <span class="hero-eyebrow">Kruger National Park · Section Ranger Services</span>
+      <h1>From the bush to the boardroom — incidents reported in minutes, not days.</h1>
+      <p class="hero-sub">
+        FRIMS replaces paper patrol logbooks with a GPS-tagged, offline-capable digital incident
+        workflow for SANParks field rangers, section rangers, ecologists and administrators.
+      </p>
+      <div class="hero-actions">
+        <button type="button" class="btn btn-primary btn-lg" id="hero-signin-btn">Sign in to continue</button>
+        <a href="#how-it-works" class="btn btn-ghost btn-lg">See how it works</a>
+      </div>
+    </div>
+  </header>
+
+  <section id="how-it-works" class="landing-section">
+    <header class="landing-section-head">
+      <p class="eyebrow">Workflow</p>
+      <h2>How it works</h2>
+      <p>Every incident follows the same auditable path from the field to resolution.</p>
+    </header>
+    <ol class="steps">
+      <li><span class="step-num">1</span><h3>Report</h3><p>Field rangers log an incident with GPS, a photo and notes — online or offline.</p></li>
+      <li><span class="step-num">2</span><h3>Assess</h3><p>The server assigns a severity (High / Medium / Low) using rule-based triage.</p></li>
+      <li><span class="step-num">3</span><h3>Notify</h3><p>High-severity incidents auto-escalate and raise an in-app alert for the section.</p></li>
+      <li><span class="step-num">4</span><h3>Track</h3><p>Section rangers and admins manage status with a full audit trail.</p></li>
+      <li><span class="step-num">5</span><h3>Record</h3><p>Fines and proof of payment can be attached to an incident. <em>(Test mode)</em></p></li>
+    </ol>
+  </section>
+
+  <section id="features" class="landing-section">
+    <header class="landing-section-head">
+      <p class="eyebrow">Capabilities</p>
+      <h2>Core features</h2>
+    </header>
+    <div class="feature-grid">
+      <article class="feature-card"><div class="feature-icon"><svg><use href="#icon-map"></use></svg></div><h3>Incident reporting &amp; tracking</h3><p>Structured, GPS-tagged incident capture with photo evidence and searchable history.</p></article>
+      <article class="feature-card"><div class="feature-icon"><svg><use href="#icon-ai"></use></svg></div><h3>AI-assisted severity</h3><p>Rule-based scoring across incident type and notes. <small>Not a trained model.</small></p></article>
+      <article class="feature-card"><div class="feature-icon"><svg><use href="#icon-sos"></use></svg></div><h3>Emergency / SOS</h3><p>One-tap urgent report for field rangers that logs a High-severity incident and raises an alert.</p></article>
+      <article class="feature-card"><div class="feature-icon"><svg><use href="#icon-users"></use></svg></div><h3>Assignment &amp; status</h3><p>Section rangers and admins manage incidents end-to-end with role-based access.</p></article>
+      <article class="feature-card"><div class="feature-icon"><svg><use href="#icon-bell"></use></svg></div><h3>In-app notifications</h3><p>High-severity alerts appear on the section dashboard. <small>In-app only.</small></p></article>
+      <article class="feature-card"><div class="feature-icon"><svg><use href="#icon-card"></use></svg></div><h3>Fines &amp; payments</h3><p>Record fines against incidents. <small>Simulated test mode.</small></p></article>
+      <article class="feature-card"><div class="feature-icon"><svg><use href="#icon-shield"></use></svg></div><h3>Admin &amp; audit</h3><p>User accounts, roles, deactivation and an immutable audit log of key actions.</p></article>
+      <article class="feature-card"><div class="feature-icon"><svg><use href="#icon-chart"></use></svg></div><h3>Dashboard analytics</h3><p>Live counts, an incident map and a breakdown by type for the signed-in section.</p></article>
+    </div>
+  </section>
+
+  <section id="users" class="landing-section">
+    <header class="landing-section-head">
+      <p class="eyebrow">Who it's for</p>
+      <h2>Intended users</h2>
+    </header>
+    <div class="user-grid">
+      <article class="user-card">
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400&auto=format&fit=crop&q=80" alt="Field Ranger">
+        <h3>Field Rangers</h3><p>Report incidents from the field — GPS, photo, offline queue.</p>
+      </article>
+      <article class="user-card">
+        <img src="https://images.unsplash.com/photo-1559339352-11d035aa65de?w=400&auto=format&fit=crop&q=80" alt="Section Ranger">
+        <h3>Section Rangers</h3><p>Monitor, escalate and resolve incidents within their section.</p>
+      </article>
+      <article class="user-card">
+        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=400&auto=format&fit=crop&q=80" alt="Ecologist">
+        <h3>Regional Ecologists</h3><p>Read-only access across sections for cross-sectional analytics.</p>
+      </article>
+      <article class="user-card">
+        <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=400&auto=format&fit=crop&q=80" alt="Administrator">
+        <h3>System Administrators</h3><p>Manage users, roles, accounts and the audit log.</p>
+      </article>
+    </div>
+  </section>
+
+  <footer class="landing-footer">
+    <div>
+      <strong>SANParks FRIMS</strong>
+      <p>Field Ranger &amp; Incident Management System — a Work-Integrated Learning project for INSY7315.</p>
+    </div>
+    <div class="landing-footer-links">
+      <a href="#how-it-works">How it works</a>
+      <a href="#features">Features</a>
+      <a href="#users">Users</a>
+    </div>
+    <p class="landing-footer-fine">This is a student demonstration. Payments are simulated. Severity is rule-based.</p>
+  </footer>
+</section>
+
 <!-- ================= LOGIN SCREEN ================= -->
-<section id="login-screen" class="screen active">
+<section id="login-screen" class="screen">
   <div class="login-card">
     <div class="brand">
       <div class="brand-mark"><img src="sanparks-logo.png" alt="SANParks Logo" class="login-logo"></div>
@@ -33,19 +163,24 @@
     <label class="demo-label">Demo accounts — tap to fill</label>
     <div class="role-picker" id="demo-accounts">
       <button type="button" class="role-btn" data-user="t.nkosi" data-pass="Ranger@123">
-        <strong>Field Ranger</strong><span>Log incidents in the field</span>
+        <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=100&auto=format&fit=crop&q=80" class="avatar-sm">
+        <strong>Field Ranger</strong><span>Log incidents</span>
       </button>
       <button type="button" class="role-btn" data-user="s.mahlangu" data-pass="Ranger@123">
-        <strong>Section Ranger</strong><span>Monitor &amp; manage incidents</span>
+        <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=100&auto=format&fit=crop&q=80" class="avatar-sm">
+        <strong>Section Ranger</strong><span>Manage incidents</span>
       </button>
       <button type="button" class="role-btn" data-user="ecologist" data-pass="Eco@123">
-        <strong>Regional Ecologist</strong><span>Cross-section analytics</span>
+        <img src="https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?w=100&auto=format&fit=crop&q=80" class="avatar-sm">
+        <strong>Ecologist</strong><span>Analytics</span>
       </button>
       <button type="button" class="role-btn" data-user="admin" data-pass="Admin@123">
-        <strong>System Administrator</strong><span>Accounts, roles &amp; audit</span>
+        <img src="https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?w=100&auto=format&fit=crop&q=80" class="avatar-sm">
+        <strong>Admin</strong><span>System control</span>
       </button>
     </div>
     <p class="hint">Demo build — remove the demo accounts before real use.</p>
+    <p class="hint"><a href="#" id="back-to-landing">← Back to home</a></p>
   </div>
 </section>
 
@@ -57,6 +192,16 @@
       <h2>Log Incident</h2>
       <span id="sync-status" class="sync-pill offline">● Offline</span>
     </header>
+
+    <!-- Ranger Log Banner -->
+    <div class="mobile-banner ranger-log-banner"></div>
+
+    <div class="sos-strip">
+      <button type="button" id="sos-btn" class="sos-btn" aria-label="Report an emergency">
+        <svg class="icon"><use href="#icon-sos"></use></svg> SOS — Report Emergency
+      </button>
+      <p class="sos-note">Logs a High-severity poaching incident and raises an alert for your section.</p>
+    </div>
 
     <form id="incident-form" class="mobile-body">
       <label for="inc-type">Incident type</label>
@@ -74,27 +219,35 @@
       <label for="inc-gps">GPS location</label>
       <div class="gps-row">
         <input id="inc-gps" type="text" placeholder="-25.10230, 31.51820" inputmode="text" autocomplete="off" />
-        <button type="button" id="get-gps-btn" class="gps-btn">📍 Locate</button>
+        <button type="button" id="get-gps-btn" class="gps-btn"><svg class="icon"><use href="#icon-locate"></use></svg> Locate</button>
       </div>
 
       <label for="inc-photo">Photo</label>
-      <label for="inc-photo" class="photo-btn" id="photo-label">[ Attach Photo ]</label>
+      <label for="inc-photo" class="photo-btn" id="photo-label">
+        <svg class="icon"><use href="#icon-camera"></use></svg> Attach Photo
+      </label>
       <input id="inc-photo" type="file" accept="image/*" capture="environment" hidden />
 
-      <label>AI severity tag</label>
+      <label>AI-assisted severity (rule-based)</label>
       <div id="ai-tag" class="ai-tag ai-idle">Awaiting input…</div>
+      <p class="ai-disclaimer">Scored by the server from incident type and notes.</p>
 
       <label for="inc-notes">Notes</label>
       <textarea id="inc-notes" rows="3" maxlength="4000" placeholder="Fresh wire snare near waterhole…"></textarea>
 
-      <button type="submit" id="submit-btn" class="submit-btn">SUBMIT</button>
+      <button type="submit" id="submit-btn" class="submit-btn">SUBMIT INCIDENT</button>
+      
+      <button type="button" class="btn-solid pay-btn" id="ranger-pay-fine-btn" style="margin-top: 12px; width: 100%; justify-content: center; background: var(--san-green);">
+        <svg class="icon"><use href="#icon-card"></use></svg> Pay Outstanding Fine
+      </button>
+
       <p id="form-msg" class="form-msg" role="status"></p>
     </form>
 
     <nav class="mobile-tabs">
-      <button type="button" class="mobile-tab active" data-tab="log" title="Log Incident"><span class="tab-icon">📝</span><span class="tab-label">Log</span></button>
-      <button type="button" class="mobile-tab" data-tab="mine" title="My Reports"><span class="tab-icon">📋</span><span class="tab-label">My Reports</span></button>
-      <button type="button" class="mobile-tab" data-tab="profile" title="Profile"><span class="tab-icon">👤</span><span class="tab-label">Profile</span></button>
+      <button type="button" class="mobile-tab active" data-tab="log" title="Log Incident"><svg class="tab-icon"><use href="#icon-log"></use></svg><span class="tab-label">Log</span></button>
+      <button type="button" class="mobile-tab" data-tab="mine" title="My Reports"><svg class="tab-icon"><use href="#icon-mine"></use></svg><span class="tab-label">My Reports</span></button>
+      <button type="button" class="mobile-tab" data-tab="profile" title="Profile"><svg class="tab-icon"><use href="#icon-user"></use></svg><span class="tab-label">Profile</span></button>
     </nav>
   </div>
 </section>
@@ -107,114 +260,131 @@
       <h2>My Reports</h2>
       <span id="sync-status-mine" class="sync-pill offline">● Offline</span>
     </header>
+    
+    <!-- Ranger Reports Banner -->
+    <div class="mobile-banner ranger-reports-banner"></div>
+    
     <div id="my-list" class="mobile-list"></div>
+    
     <nav class="mobile-tabs">
-      <button type="button" class="mobile-tab" data-tab="log" title="Log Incident"><span class="tab-icon">📝</span><span class="tab-label">Log</span></button>
-      <button type="button" class="mobile-tab active" data-tab="mine" title="My Reports"><span class="tab-icon">📋</span><span class="tab-label">My Reports</span></button>
-      <button type="button" class="mobile-tab" data-tab="profile" title="Profile"><span class="tab-icon">👤</span><span class="tab-label">Profile</span></button>
+      <button type="button" class="mobile-tab" data-tab="log" title="Log Incident"><svg class="tab-icon"><use href="#icon-log"></use></svg><span class="tab-label">Log</span></button>
+      <button type="button" class="mobile-tab active" data-tab="mine" title="My Reports"><svg class="tab-icon"><use href="#icon-mine"></use></svg><span class="tab-label">My Reports</span></button>
+      <button type="button" class="mobile-tab" data-tab="profile" title="Profile"><svg class="tab-icon"><use href="#icon-user"></use></svg><span class="tab-label">Profile</span></button>
     </nav>
   </div>
 </section>
 
-<!-- ================= DASHBOARD (section ranger / ecologist / admin) ================= -->
+<!-- ================= DASHBOARD ================= -->
 <section id="dashboard-screen" class="screen">
-  <header class="dash-header">
-    <div>
-      <h1>Incident Dashboard — <span id="dash-section">—</span></h1>
-      <p class="dash-user">Signed in as <strong id="dash-user-name">—</strong> · <span id="dash-role">—</span></p>
-    </div>
-    <div class="dash-actions">
-      <select id="scope-select" class="ghost-select" aria-label="Section filter" hidden></select>
-      <button type="button" id="refresh-btn" class="ghost-btn">↻ Refresh</button>
-      <button type="button" id="export-csv" class="ghost-btn">Export CSV</button>
-      <button type="button" id="export-pdf" class="ghost-btn">Export PDF</button>
-      <button type="button" id="users-btn" class="ghost-btn" hidden>👥 Users</button>
-      <button type="button" id="audit-btn" class="ghost-btn" hidden>🧾 Audit log</button>
-      <button type="button" class="ghost-btn profile-nav-btn" id="dash-profile-btn">👤 Profile</button>
-      <button type="button" id="logout-btn-dash" class="ghost-btn danger">Sign out</button>
-    </div>
-  </header>
-
-  <div class="stats-grid">
-    <div class="stat-card"><div class="stat-num" id="stat-open">0</div><div class="stat-label">Open</div></div>
-    <div class="stat-card"><div class="stat-num" id="stat-escalated">0</div><div class="stat-label">Escalated</div></div>
-    <div class="stat-card"><div class="stat-num" id="stat-resolved">0</div><div class="stat-label">Resolved (MTD)</div></div>
-    <div class="stat-card"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total</div></div>
-  </div>
-
-  <div class="panel" id="alerts-panel">
-    <div class="panel-head">
-      <h3>High-Severity Alerts <span id="alert-count" class="count-pill zero">0</span></h3>
-      <button type="button" id="alerts-readall" class="action-btn">Mark all read</button>
-    </div>
-    <div id="alerts-list"></div>
-  </div>
-
-  <div class="panel">
-    <h3>Live Incident Map</h3>
-    <div id="map"></div>
-  </div>
-
-  <div class="panel">
-    <h3>Incidents by Type</h3>
-    <canvas id="type-chart" height="90"></canvas>
-  </div>
-
-  <div class="panel">
-    <div class="panel-head">
-      <h3>Incident Log</h3>
-      <div class="filters">
-        <button type="button" class="filter-btn active" data-filter="all">All</button>
-        <button type="button" class="filter-btn" data-filter="Open">Open</button>
-        <button type="button" class="filter-btn" data-filter="Escalated">Escalated</button>
-        <button type="button" class="filter-btn" data-filter="Resolved">Resolved</button>
+  <!-- Dashboard Banner -->
+  <div class="page-banner dashboard-banner"></div>
+  
+  <div class="dashboard-inner">
+    <header class="dash-header">
+      <div>
+        <h1>Incident Dashboard — <span id="dash-section">—</span></h1>
+        <p class="dash-user">Signed in as <strong id="dash-user-name">—</strong> · <span id="dash-role">—</span></p>
       </div>
-      <input type="search" id="incident-search" class="search-input" placeholder="Search ref, type, notes…" aria-label="Search incidents" />
+      <div class="dash-actions">
+        <select id="scope-select" class="ghost-select" aria-label="Section filter" hidden></select>
+        <button type="button" id="refresh-btn" class="ghost-btn">↻ Refresh</button>
+        <button type="button" id="export-csv" class="ghost-btn">Export CSV</button>
+        <button type="button" id="export-pdf" class="ghost-btn">Export PDF</button>
+        <button type="button" id="users-btn" class="ghost-btn" hidden>👥 Users</button>
+        <button type="button" id="audit-btn" class="ghost-btn" hidden>🧾 Audit log</button>
+        <button type="button" class="ghost-btn profile-nav-btn" id="dash-profile-btn">👤 Profile</button>
+        <button type="button" id="logout-btn-dash" class="ghost-btn danger">Sign out</button>
+      </div>
+    </header>
+
+    <div class="stats-grid">
+      <div class="stat-card"><div class="stat-num" id="stat-open">0</div><div class="stat-label">Open</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-escalated">0</div><div class="stat-label">Escalated</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-resolved">0</div><div class="stat-label">Resolved (MTD)</div></div>
+      <div class="stat-card"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total</div></div>
     </div>
-    <div class="table-scroll">
-      <table class="incident-table wide">
-        <thead>
-          <tr><th>Ref</th><th>Time</th><th>Type</th><th>Severity</th><th>Status</th><th>Reported By</th><th>Location</th><th></th></tr>
-        </thead>
-        <tbody id="incident-tbody"></tbody>
-      </table>
+
+    <div class="panel" id="alerts-panel">
+      <div class="panel-head">
+        <h3>High-Severity Alerts <span id="alert-count" class="count-pill zero">0</span></h3>
+        <button type="button" id="alerts-readall" class="action-btn">Mark all read</button>
+      </div>
+      <div id="alerts-list"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Live Incident Map</h3>
+      <div id="map"></div>
+    </div>
+
+    <div class="panel">
+      <h3>Incidents by Type</h3>
+      <canvas id="type-chart" height="90"></canvas>
+    </div>
+
+    <div class="panel">
+      <div class="panel-head">
+        <h3>Incident Log</h3>
+        <div class="filters">
+          <button type="button" class="filter-btn active" data-filter="all">All</button>
+          <button type="button" class="filter-btn" data-filter="Open">Open</button>
+          <button type="button" class="filter-btn" data-filter="Escalated">Escalated</button>
+          <button type="button" class="filter-btn" data-filter="Resolved">Resolved</button>
+        </div>
+        <input type="search" id="incident-search" class="search-input" placeholder="Search ref, type, notes…" aria-label="Search incidents" />
+      </div>
+      <div class="table-scroll">
+        <table class="incident-table wide">
+          <thead>
+            <tr><th>Ref</th><th>Time</th><th>Type</th><th>Severity</th><th>Status</th><th>Reported By</th><th>Location</th><th></th></tr>
+          </thead>
+          <tbody id="incident-tbody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- ================= USERS (admin) ================= -->
 <section id="users-screen" class="screen">
-  <button type="button" class="profile-back" data-goto="dashboard">← Back to dashboard</button>
-  <div class="screen-head">
-    <h1>User Management</h1>
-    <button type="button" id="add-user-btn" class="btn-solid">+ Add user</button>
-  </div>
-  <div class="panel">
-    <div class="table-scroll">
-      <table class="incident-table">
-        <thead><tr><th>Name</th><th>Username</th><th>Role</th><th>Section</th><th>Status</th><th></th></tr></thead>
-        <tbody id="users-tbody"></tbody>
-      </table>
+  <div class="page-banner admin-banner"></div>
+  <div class="dashboard-inner">
+    <button type="button" class="profile-back" data-goto="dashboard">← Back to dashboard</button>
+    <div class="screen-head">
+      <h1>User Management</h1>
+      <button type="button" id="add-user-btn" class="btn-solid">+ Add user</button>
+    </div>
+    <div class="panel">
+      <div class="table-scroll">
+        <table class="incident-table">
+          <thead><tr><th>User</th><th>Username</th><th>Role</th><th>Section</th><th>Status</th><th></th></tr></thead>
+          <tbody id="users-tbody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- ================= AUDIT LOG (admin / ecologist) ================= -->
 <section id="audit-screen" class="screen">
-  <button type="button" class="profile-back" data-goto="dashboard">← Back to dashboard</button>
-  <div class="screen-head"><h1>Audit Log</h1></div>
-  <div class="panel">
-    <div class="table-scroll">
-      <table class="incident-table">
-        <thead><tr><th>Time</th><th>User</th><th>Action</th><th>Record</th></tr></thead>
-        <tbody id="audit-tbody"></tbody>
-      </table>
+  <div class="page-banner admin-banner"></div>
+  <div class="dashboard-inner">
+    <button type="button" class="profile-back" data-goto="dashboard">← Back to dashboard</button>
+    <div class="screen-head"><h1>Audit Log</h1></div>
+    <div class="panel">
+      <div class="table-scroll">
+        <table class="incident-table">
+          <thead><tr><th>Time</th><th>User</th><th>Action</th><th>Record</th></tr></thead>
+          <tbody id="audit-tbody"></tbody>
+        </table>
+      </div>
     </div>
   </div>
 </section>
 
 <!-- ================= PROFILE SCREEN ================= -->
 <section id="profile-screen" class="screen">
+  <div class="page-banner profile-banner"></div>
   <div class="profile-wrap">
     <button type="button" class="profile-back" id="profile-back">← Back</button>
 
@@ -225,11 +395,14 @@
 
     <div class="profile-grid">
       <div class="profile-left">
-        <div class="card">
-          <p class="card-eyebrow" id="profile-role-eyebrow">RANGER</p>
-          <h2 class="profile-name" id="profile-name">—</h2>
-          <p class="profile-role" id="profile-role-line">—</p>
-          <p class="profile-id" id="profile-id">ID: —</p>
+        <div class="card profile-card">
+          <img id="profile-avatar" src="" alt="User Avatar" class="avatar-img">
+          <div>
+            <p class="card-eyebrow" id="profile-role-eyebrow">RANGER</p>
+            <h2 class="profile-name" id="profile-name">—</h2>
+            <p class="profile-role" id="profile-role-line">—</p>
+            <p class="profile-id" id="profile-id">ID: —</p>
+          </div>
         </div>
 
         <div class="card info-card">
@@ -256,11 +429,72 @@
     <h2 id="detail-title">Incident</h2>
     <p class="modal-sub" id="detail-sub"></p>
     <div id="detail-body"></div>
+
+    <!-- Payment / fine panel (SIMULATED) -->
+    <div id="payment-panel" class="payment-panel" hidden>
+      <div class="payment-head">
+        <h4>Fine &amp; payment</h4>
+        <span class="sim-badge">TEST MODE</span>
+      </div>
+      <div class="payment-grid">
+        <div><span>Fine reference</span><strong>PAY-001234</strong></div>
+        <div><span>Amount</span><strong>R 1,234.00</strong></div>
+        <div><span>Status</span><strong class="pay-status-success">Pending Payment</strong></div>
+        <div><span>Method</span><strong>Simulated</strong></div>
+      </div>
+      <p class="payment-note">This is sample data to demonstrate the workflow. No real payment is processed.</p>
+      
+      <div class="payment-actions" id="ranger-payment-actions" hidden>
+        <button type="button" class="btn-solid pay-btn" id="collect-payment-btn">
+           <svg class="icon"><use href="#icon-card"></use></svg> Open Payment Gateway
+        </button>
+      </div>
+      
+      <div class="payment-actions" id="manager-payment-actions" hidden>
+        <button type="button" class="btn-solid" disabled title="Requires a payment gateway — not implemented">Proceed to Payment</button>
+      </div>
+    </div>
+
     <div class="modal-actions">
       <button type="button" id="detail-reopen" class="ghost-btn" hidden>Reopen</button>
       <button type="button" id="detail-escalate" class="btn-solid btn-warn" hidden>Escalate</button>
       <button type="button" id="detail-resolve" class="btn-solid" hidden>Mark resolved</button>
       <button type="button" id="detail-close" class="ghost-btn">Close</button>
+    </div>
+  </div>
+</div>
+
+<!-- ================= PAYMENT GATEWAY MODAL ================= -->
+<div id="gateway-modal" class="modal-backdrop" role="dialog" aria-modal="true">
+  <div class="modal gateway-modal">
+    <div class="gateway-header">
+      <div class="gateway-logo">
+        <svg class="icon"><use href="#icon-lock"></use></svg> SecurePay
+      </div>
+      <span class="sim-badge">TEST MODE</span>
+    </div>
+    <div class="gateway-body">
+      <div class="gateway-amount">
+        <span>Amount Due</span>
+        <strong>R 1,234.00</strong>
+      </div>
+      <label>Card Number</label>
+      <input type="text" value="4242 4242 4242 4242" disabled />
+      <div class="gateway-row">
+        <div>
+          <label>Expiry</label>
+          <input type="text" value="12/28" disabled />
+        </div>
+        <div>
+          <label>CVC</label>
+          <input type="text" value="123" disabled />
+        </div>
+      </div>
+      <p class="gateway-note">This is a simulated payment gateway for demonstration purposes. No funds will be transferred.</p>
+    </div>
+    <div class="modal-actions">
+      <button type="button" class="ghost-btn" onclick="document.getElementById('gateway-modal').classList.remove('open')">Cancel</button>
+      <button type="button" class="btn-solid pay-btn" id="process-payment-btn">Pay Now</button>
     </div>
   </div>
 </div>
@@ -314,11 +548,8 @@
     </div>
     <button type="button" id="chat-close" class="chat-close" aria-label="Close chat">✕</button>
   </header>
-
   <div id="chat-log" class="chat-log" aria-live="polite"></div>
-
   <div id="chat-suggestions" class="chat-suggestions"></div>
-
   <form id="chat-form" class="chat-form" autocomplete="off">
     <input id="chat-input" type="text" maxlength="500" placeholder="Ask the FRIMS assistant…" aria-label="Chat message" />
     <button id="chat-send" type="submit" aria-label="Send">➤</button>
