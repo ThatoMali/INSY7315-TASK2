@@ -1,8 +1,15 @@
+Here is an upgraded, portfolio-ready version of your `README.md`. 
+
+
+---
+
 # SANParks FRIMS — Field Ranger & Incident Management System
 
-Node.js + Express + SQLite (better-sqlite3) + JWT, with a single-page front-end served from the same app.
+Node.js + Express + SQLite (better-sqlite3) + JWT, with a single-page front-end served from the same app. Includes offline-first data capture, server-side severity triage, and a built-in rule-based AI assistant.
 
-## Run it (2 minutes)
+*(Caption: The Section Ranger dashboard, showing live stats, map, and alerts.)*
+
+## 🚀 Run it (2 minutes)
 
 ```bash
 npm install
@@ -10,10 +17,68 @@ npm start
 # open http://localhost:3000
 ```
 
-Requires Node 20 or newer. The SQLite database (`data/frims.db`) is created and seeded automatically on first run.
-No `.env` file is needed locally. Run the tests with `npm test`.
+Requires **Node 20 or newer**. The SQLite database (`data/frims.db`) is created and seeded automatically on first run. No `.env` file is needed locally. 
 
-## Demo accounts
+**Run the tests:**
+```bash
+npm test
+```
+
+---
+
+## 🏗 System Architecture
+
+```mermaid
+flowchart TB
+    subgraph L1["Browser (public/)"]
+        direction LR
+        A1["SPA"]:::leaf
+        A2["Leaflet map"]:::leaf
+        A3["Chart.js"]:::leaf
+        A4["Offline queue"]:::leaf
+    end
+
+    L1 -->|"HTTPS · JSON · JWT bearer"| L2
+
+    subgraph L2["Express App — src/app.js"]
+        direction LR
+        B1["Security headers<br/>(CSP)"]:::mid
+        B2["CORS"]:::mid
+        B3["express.json<br/>(8 MB)"]:::mid
+    end
+
+    L2 -.->|"static"| STATIC["/ , /js , /vendor<br/>express.static"]
+    L2 -->|"/api/*"| L3
+
+    subgraph L3["Middleware pipeline (in order)"]
+        direction LR
+        C1["1. authenticate<br/>JWT → DB user"]:::mid
+        C2["2. authorize<br/>role gate"]:::mid
+        C3["3. validate<br/>input rules"]:::mid
+        C4["4. scopeSql<br/>row filter"]:::mid
+    end
+
+    L3 -->|"parameterised SQL"| L4
+
+    subgraph L4["SQLite — better-sqlite3 (WAL)"]
+        direction LR
+        D1["users"]:::store
+        D2["sections"]:::store
+        D3["incidents"]:::store
+        D4["alerts"]:::store
+        D5["audit_log"]:::store
+    end
+
+    D3 -.->|"files"| UP["uploads/<br/>incident photos"]
+
+    classDef leaf fill:#e6efe9,stroke:#2f6b4a,color:#1e3a2a,stroke-width:1.5px;
+    classDef mid  fill:#ffffff,stroke:#2f6b4a,color:#1e3a2a,stroke-width:1.5px;
+    classDef store fill:#fbe9d6,stroke:#c1691a,color:#1e3a2a,stroke-width:1.5px;
+```
+
+---
+
+## 🔐 Demo Accounts
 
 | Role                 | Username     | Password     | Lands on                          |
 |----------------------|--------------|--------------|-----------------------------------|
@@ -24,7 +89,28 @@ No `.env` file is needed locally. Run the tests with `npm test`.
 
 Others: `m.dlamini`, `k.vanwyk`, `n.zulu` (field rangers, Kruger South), `j.botha` (section ranger, Kruger North), `p.molefe` (field ranger, Kruger North) — password `Ranger@123`.
 
-## What each role can do
+---
+
+## 📱 Live Demo & Screenshots
+
+### 1. Mobile Incident Logging
+Rangers can log incidents from the field. The screen captures GPS, allows a photo upload (downscaled for weak connections), and shows a real-time AI severity tag. It is fully responsive for phone screens.
+
+![Mobile Ranger Screen](docs/screenshots/slide6-ranger-mobile.png)
+
+### 2. Automated Escalation & Alerts
+If the server-side triage detects a High severity incident, it is automatically set to *Escalated* and raises an alert for section rangers.
+
+![Escalated Incident and Alert](docs/screenshots/slide6-escalated-alert.png)
+
+### 3. Audit Trail
+Every action (login, incident creation, status change, user deactivation) is logged immutably for compliance.
+
+![Audit Log](docs/screenshots/slide6-audit.png)
+
+---
+
+## 🛡 What each role can do
 
 | Capability                                   | Field Ranger | Section Ranger | Ecologist | Admin |
 |----------------------------------------------|:-:|:-:|:-:|:-:|
@@ -38,13 +124,22 @@ Others: `m.dlamini`, `k.vanwyk`, `n.zulu` (field rangers, Kruger South), `j.both
 
 Scoping is enforced **on the server** (`src/scope.js`), not just hidden in the UI.
 
-## How it works
+---
 
-- **Severity** ("AI suggestion") is calculated by the server (`src/triage.js`, rule-based: incident type + keywords in the notes). The client cannot choose severity or status. High → status *Escalated* and an alert is raised.
-- **Offline queue**: if the network is down when a ranger submits, the report is saved on the device and sent automatically when the connection returns (or via *Profile → Sync now*). A `client_id` makes retries idempotent, so nothing is duplicated.
-- **Security**: bcrypt password hashes, JWT (re-checked against the DB on every request, so deactivating a user takes effect immediately), role guards, input validation, parameterised SQL only, HTML-escaped output, strict Content-Security-Policy, login rate-limiting, CSV formula-injection protection, image-type whitelist for uploads, audit log that never stores password hashes.
+## ⚙️ How it works
 
-## Project layout
+- **Severity Triage**: Calculated server-side (`src/triage.js`, rule-based: type + keywords). The client cannot choose severity or status. High → status *Escalated* and alert raised.
+- **Offline Queue**: If the network is down, reports are saved in `localStorage` and auto-synced later. A `client_id` makes retries idempotent, so nothing is duplicated.
+- **Built-in Chatbot**: A deterministic, offline assistant (`src/routes/chat.js`). It answers how-to questions, scores incident descriptions live, and queries the database respecting the user's scope (e.g., "how many incidents are open?").
+- **Security**: 
+  - bcrypt hashes, strict Content-Security-Policy.
+  - JWT re-checked against the DB on every request (deactivating a user takes effect immediately).
+  - Parameterised SQL, HTML-escaped output, CSV formula-injection protection.
+  - Login rate-limiting (10 fails / 15 min), image-type whitelist.
+
+---
+
+## 📂 Project layout
 
 ```
 server.js              start-up
@@ -53,14 +148,18 @@ src/db.js              schema, indexes, seed data
 src/auth.js            JWT + bcrypt helpers
 src/middleware.js      authenticate, authorize, validate, error handlers
 src/scope.js           role-based data scoping
-src/triage.js          severity rules        src/audit.js  audit trail
-src/routes/            auth, incidents, users, alerts, reports, audit
+src/triage.js          severity rules        
+src/audit.js           audit trail
+src/routes/            auth, incidents, users, alerts, reports, audit, chat
 public/                index.html, styles.css, js/api.js, js/app.js, vendor/ (Leaflet, Chart.js)
 tests/api.test.js      unit + integration tests (node:test)
-render.yaml            Render blueprint       .github/workflows/ci-cd.yml   CI + deploy
+render.yaml            Render blueprint       
+.github/workflows/     CI + deploy
 ```
 
-## REST API (all JSON; all except login/health need `Authorization: Bearer <token>`)
+---
+
+## 🔌 REST API (all JSON; except login/health need `Authorization: Bearer <token>`)
 
 | Method & path | Purpose | Roles |
 |---|---|---|
@@ -72,19 +171,29 @@ render.yaml            Render blueprint       .github/workflows/ci-cd.yml   CI +
 | `PATCH /api/incidents/:id` | change status/severity | section ranger, admin |
 | `GET /api/alerts` · `PATCH /api/alerts/:id/read` · `PATCH /api/alerts/read-all` | alerts | section ranger, ecologist, admin |
 | `GET /api/reports/incidents.csv` (or `.json`) | export | section ranger, ecologist, admin |
-| `GET/POST /api/users` · `PATCH/DELETE /api/users/:id` · `GET /api/users/sections` | user admin (DELETE = deactivate) | admin |
+| `GET/POST /api/users` · `PATCH/DELETE /api/users/:id` · `GET /api/users/sections` | user admin | admin |
 | `GET /api/audit` | audit log | admin, ecologist |
+| `POST /api/chat` | AI assistant | any |
 | `GET /api/health` | health check | public |
 
-## Deploy to Render
+---
 
-1. Push to GitHub, then in Render choose **New → Blueprint** and select the repo (`render.yaml` does the rest; `JWT_SECRET` is generated for you).
-2. In the Render service, copy the **Deploy Hook** URL into a GitHub repo secret named `RENDER_DEPLOY_HOOK`. Every push to `main` that passes the tests then deploys.
-3. Branching: `feature/*` → PR into `develop` → PR into `main`. CI runs on all pushes and PRs.
+## ☁️ CI/CD & Deploy to Render
 
-**Render free plan note:** the disk is ephemeral, so data and photos reset when the service restarts or redeploys (the demo data is re-seeded). See the comments in `render.yaml` for adding a persistent disk.
+This project uses GitHub Actions for continuous integration and Render for hosting.
 
-## Before real-world use
+![GitHub Actions](docs/screenshots/slide9-actions-green.png)
+
+1. Push to GitHub. CI runs tests on Node 22 and 24.
+2. In Render, choose **New → Blueprint** and select the repo (`render.yaml` configures everything; `JWT_SECRET` is generated).
+3. Copy the Render **Deploy Hook** URL into a GitHub repo secret named `RENDER_DEPLOY_HOOK`. Every push to `main` that passes tests deploys automatically.
+4. Branching strategy: `feature/*` → PR into `develop` → PR into `main`.
+
+**Render free plan note:** the disk is ephemeral, so data and photos reset when the service restarts (demo data is re-seeded). See comments in `render.yaml` for adding a persistent disk.
+
+---
+
+## ⚠️ Before real-world use
 
 - Remove the demo-account buttons from `public/index.html` and change the seeded passwords.
 - The map needs internet access for OpenStreetMap tiles; everything else is served locally.
