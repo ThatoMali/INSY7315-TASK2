@@ -1,7 +1,4 @@
-Here is an upgraded, portfolio-ready version of your `README.md`. 
 
-
----
 
 # SANParks FRIMS — Field Ranger & Incident Management System
 
@@ -107,7 +104,15 @@ If the server-side triage detects a High severity incident, it is automatically 
 Every action (login, incident creation, status change, user deactivation) is logged immutably for compliance.
 <img width="898" height="630" alt="image" src="https://github.com/user-attachments/assets/21c68015-a183-4238-8909-429de56ba5be" />
 
+### 4. Payments & Permits Gateway
+Tourists and staff can pay for conservation fees, overnight permits, and settle spot fines directly through an integrated Stripe/PayFast gateway. The system automatically generates a digital receipt and updates the visitor's dashboard.
 
+<!-- Placeholder for Payment Gateway Screenshot --><img width="800" alt="Payment Gateway Checkout" src="YOUR_PAYMENT_GATEWAY_SCREENSHOT_URL_HERE" />
+
+### 5. AI Chatbot Assistant
+A built-in, context-aware assistant helps users navigate the system. It answers how-to questions, queries live database stats (scoped to the user's role), and can score incident descriptions on the fly.
+
+<!-- Placeholder for Chatbot Screenshot --><img width="400" alt="FRIMS AI Chatbot Assistant" src="YOUR_CHATBOT_SCREENSHOT_URL_HERE" />
 ---
 
 ## 🛡 What each role can do
