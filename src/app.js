@@ -20,7 +20,7 @@ function createApp() {
   app.disable('x-powered-by');
   app.set('trust proxy', 1);
 
-  // ---- security headers (includes CSP that allows the chat UI) ----
+  // ---- security headers (includes CSP that allows the chat UI and images) ----
   app.use((req, res, next) => {
     res.setHeader('X-Content-Type-Options', 'nosniff');
     res.setHeader('X-Frame-Options', 'DENY');
@@ -28,17 +28,17 @@ function createApp() {
     res.setHeader('Permissions-Policy', 'geolocation=(self), camera=(self)');
     res.setHeader('Content-Security-Policy', [
       "default-src 'self'",
-      "img-src 'self' data: https://*.tile.openstreetmap.org",
+      "img-src 'self' data: https:", // Allow images from Unsplash and other https sources
       "style-src 'self' 'unsafe-inline'",
       "script-src 'self'",
       "connect-src 'self'",
-      "font-src 'self'",
+      "font-src 'self' https://fonts.gstatic.com", // Allow Inter font from Google
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
     ].join('; '));
-    next();
-  });
+    next(); // <--- This was missing in your pasted version
+  });     // <--- This was missing in your pasted version
 
   // ---- CORS (only needed if front-end is on a different origin) ----
   if (config.CORS_ORIGIN) {
