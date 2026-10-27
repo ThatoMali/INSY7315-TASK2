@@ -8,35 +8,53 @@ Node.js + Express + SQLite (better-sqlite3) + JWT, with a single-page front-end 
 npm install
 npm start
 # open http://localhost:3000
-Requires Node 20 or newer. The SQLite database (data/frims.db) is created and seeded automatically on first run. No .env file is needed locally.
+```
+flowchart TB
+    subgraph L1["Browser (public/)"]
+        direction LR
+        A1["SPA"]:::leaf
+        A2["Leaflet map"]:::leaf
+        A3["Chart.js"]:::leaf
+        A4["Offline queue"]:::leaf
+    end
 
-Run the tests:
+    L1 -->|"HTTPS · JSON · JWT bearer"| L2
 
-bash
-npm test
-🏗 System Architecture
+    subgraph L2["Express App — src/app.js"]
+        direction LR
+        B1["Security headers<br/>(CSP)"]:::mid
+        B2["CORS"]:::mid
+        B3["express.json<br/>(8 MB)"]:::mid
+    end
+
+    L2 -.->|"static"| STATIC["/ , /js , /vendor<br/>express.static"]
+    L2 -->|"/api/*"| L3
+
+    subgraph L3["Middleware pipeline (in order)"]
+        direction LR
+        C1["1. authenticate<br/>JWT → DB user"]:::mid
+        C2["2. authorize<br/>role gate"]:::mid
+        C3["3. validate<br/>input rules"]:::mid
+        C4["4. scopeSql<br/>row filter"]:::mid
+    end
+
+    L3 -->|"parameterised SQL"| L4
+
+    subgraph L4["SQLite — better-sqlite3 (WAL)"]
+        direction LR
+        D1["users"]:::store
+        D2["sections"]:::store
+        D3["incidents"]:::store
+        D4["alerts"]:::store
+        D5["audit_log"]:::store
+    end
+
+    D3 -.->|"files"| UP["uploads/<br/>incident photos"]
 
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+    classDef leaf fill:#e6efe9,stroke:#2f6b4a,color:#1e3a2a,stroke-width:1.5px;
+    classDef mid  fill:#ffffff,stroke:#2f6b4a,color:#1e3a2a,stroke-width:1.5px;
+    classDef store fill:#fbe9d6,stroke:#c1691a,color:#1e3a2a,stroke-width:1.5px;
 
 Demo Accounts
 Role	Username	Password	Lands on
@@ -100,7 +118,6 @@ Parameterised SQL, HTML-escaped output, CSV formula-injection protection.
 Login rate-limiting (10 fails / 15 min), image-type whitelist.
 
 Project layout
-text
 server.js              start-up
 src/app.js             express app (headers, routes, static files)
 src/db.js              schema, indexes, seed data
@@ -114,6 +131,7 @@ public/                index.html, styles.css, js/api.js, js/app.js, vendor/ (Le
 tests/api.test.js      unit + integration tests (node:test)
 render.yaml            Render blueprint       
 .github/workflows/     CI + deploy
+
 REST API (all JSON; except login/health need Authorization: Bearer <token>)
 Method & path	Purpose	Roles
 POST /api/auth/login · GET /api/auth/me	sign in / current user	any
