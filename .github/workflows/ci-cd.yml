@@ -1,0 +1,72 @@
+name: FRIMS CI/CD
+
+# feature/* -> PR into develop -> PR into main.  Every push and PR is tested;
+# only a green push to main is deployed, and the deployment is then smoke-tested.
+on:
+  push:
+    branches: [ main, develop, 'feature/**' ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  test:
+    name: Syntax check + tests (Node ${{ matrix.node }})
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node: [20, 22, 24]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: ${{ matrix.node }}
+          cache: npm
+      - run: npm ci
+      - name: Syntax check (server and browser scripts)
+        run: find server.js src public/js -name '*.js' -print0 | xargs -0 -n1 node --check
+      - name: Unit + API integration tests
+        run: npm test
+
+  security:
+    name: Dependency security audit
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: npm audit --omit=dev --audit-level=high
+
+  deploy:
+    name: Deploy to Render
+    needs: [test, security]
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy hook
+        env:
+          RENDER_DEPLOY_HOOK: ${{ secrets.RENDER_DEPLOY_HOOK }}
+        run: |
+          if [ -n "$RENDER_DEPLOY_HOOK" ]; then
+            curl -fsSL -X POST "$RENDER_DEPLOY_HOOK"
+            echo "Deployment triggered."
+          else
+            echo "RENDER_DEPLOY_HOOK secret not set - skipping deploy."
+          fi
+
+  smoke-test:
+    name: Post-deploy smoke test
+    needs: deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Wait for the live site to report healthy
+        env:
+          LIVE_URL: ${{ vars.LIVE_URL || 'https://frims.onrender.com' }}
+        run: |
+          for i in $(seq 1 20); do
+            if curl -fsS "$LIVE_URL/api/health" | grep -q '"status":"ok"'; then
+              echo "Live site healthy on attempt $i"; exit 0
+            fi
+            echo "Attempt $i: not ready yet, waiting 15s"; sleep 15
+          done
+          echo "Live site did not become healthy"; exit 1

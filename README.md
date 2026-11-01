@@ -1,1 +1,213 @@
-# SANParks FRIMS
+
+
+# SANParks FRIMS — Field Ranger & Incident Management System
+
+Node.js + Express + SQLite (better-sqlite3) + JWT, with a single-page front-end served from the same app. Includes offline-first data capture, server-side severity triage, and a built-in rule-based AI assistant.
+
+
+## 🚀 Run it on any laptop (2 minutes)
+
+**Requirements:** [Node.js 20 or newer (LTS)](https://nodejs.org) and a modern browser (Chrome, Edge, Firefox, Safari). Internet is only needed for the map tiles and decorative photos; everything else works offline.
+
+| Your computer | How to start |
+|---|---|
+| **Windows** | Double-click **`Start-FRIMS.bat`** |
+| **macOS / Linux** | Run `./start-frims.sh` in a terminal |
+| **Any (manual)** | `npm install` then `npm start`, then open http://localhost:3000 |
+
+The SQLite database (`data/frims.db`) is created and seeded automatically on first run. **No `.env` file is needed locally.**
+
+**Run the tests:** `npm test` (29 unit + API integration tests).
+
+**Troubleshooting**
+- *`node` / `npm` is not recognised* → install Node.js LTS, then close and reopen the terminal.
+- *Port 3000 already in use* → set another port: `PORT=3001 npm start` (macOS/Linux) or `set PORT=3001 && npm start` (Windows).
+- *`npm install` fails on `better-sqlite3`* → make sure you are on Node 20, 22 or 24 (LTS); these have pre-built binaries.
+- *Want a clean slate* → stop the server and delete the `data/` and `uploads/` folders; they are recreated on next start.
+
+---
+
+## 🏗 System Architecture
+
+```mermaid
+flowchart TB
+    subgraph L1["Browser (public/)"]
+        direction LR
+        A1["SPA"]:::leaf
+        A2["Leaflet map"]:::leaf
+        A3["Chart.js"]:::leaf
+        A4["Offline queue"]:::leaf
+    end
+
+    L1 -->|"HTTPS · JSON · JWT bearer"| L2
+
+    subgraph L2["Express App — src/app.js"]
+        direction LR
+        B1["Security headers<br/>(CSP)"]:::mid
+        B2["CORS"]:::mid
+        B3["express.json<br/>(8 MB)"]:::mid
+    end
+
+    L2 -.->|"static"| STATIC["/ , /js , /vendor<br/>express.static"]
+    L2 -->|"/api/*"| L3
+
+    subgraph L3["Middleware pipeline (in order)"]
+        direction LR
+        C1["1. authenticate<br/>JWT → DB user"]:::mid
+        C2["2. authorize<br/>role gate"]:::mid
+        C3["3. validate<br/>input rules"]:::mid
+        C4["4. scopeSql<br/>row filter"]:::mid
+    end
+
+    L3 -->|"parameterised SQL"| L4
+
+    subgraph L4["SQLite — better-sqlite3 (WAL)"]
+        direction LR
+        D1["users"]:::store
+        D2["sections"]:::store
+        D3["incidents"]:::store
+        D4["alerts"]:::store
+        D5["audit_log"]:::store
+    end
+
+    D3 -.->|"files"| UP["uploads/<br/>incident photos"]
+
+    classDef leaf fill:#e6efe9,stroke:#2f6b4a,color:#1e3a2a,stroke-width:1.5px;
+    classDef mid  fill:#ffffff,stroke:#2f6b4a,color:#1e3a2a,stroke-width:1.5px;
+    classDef store fill:#fbe9d6,stroke:#c1691a,color:#1e3a2a,stroke-width:1.5px;
+```
+
+---
+
+## Demo Accounts
+
+| Role                 | Username     | Password     | Lands on                          |
+|----------------------|--------------|--------------|-----------------------------------|
+| Field Ranger         | `t.nkosi`    | `Ranger@123` | Mobile log-incident screen        |
+| Section Ranger       | `s.mahlangu` | `Ranger@123` | Dashboard (Kruger South)          |
+| Regional Ecologist   | `ecologist`  | `Eco@123`    | Dashboard (all sections, read-only) + audit log |
+| System Administrator | `admin`      | `Admin@123`  | Dashboard + user management + audit log |
+
+Others: `m.dlamini`, `k.vanwyk`, `n.zulu` (field rangers, Kruger South), `j.botha` (section ranger, Kruger North), `p.molefe` (field ranger, Kruger North) — password `Ranger@123`.
+
+---
+
+## 📱 Live Demo & Screenshots
+
+### 1. Mobile Incident Logging
+Rangers can log incidents from the field. The screen captures GPS, allows a photo upload (downscaled for weak connections), and shows a real-time AI severity tag. It is fully responsive for phone screens.
+<img width="320" height="766" alt="image" src="https://github.com/user-attachments/assets/a4248633-9eac-43fa-a217-c94a8150ad8f" />
+
+
+
+### 2. Automated Escalation & Alerts
+If the server-side triage detects a High severity incident, it is automatically set to *Escalated* and raises an alert for section rangers.
+<img width="299" height="283" alt="image" src="https://github.com/user-attachments/assets/90429549-9f2c-4975-bca8-11dae254910f" />
+
+
+### 3. Audit Trail
+Every action (login, incident creation, status change, user deactivation) is logged immutably for compliance.
+<img width="898" height="630" alt="image" src="https://github.com/user-attachments/assets/21c68015-a183-4238-8909-429de56ba5be" />
+
+### 4. Payments & Permits Gateway
+Section rangers can issue a fine against an incident and the field ranger can settle it through the PayFast hosted checkout. This is an **optional extension that is switched off by default**: it only activates when `PAYFAST_*` variables are set (see `.env.example`); without them the app tells the user that online payments are not configured. A fine is only marked paid after PayFast's signed server-to-server confirmation.
+
+<img width="385" height="356" alt="image" src="https://github.com/user-attachments/assets/5215a224-4fa7-45c6-a639-88de38b38b74" />
+
+
+### 5. AI Chatbot Assistant
+A built-in, context-aware assistant helps users navigate the system. It answers how-to questions, queries live database stats (scoped to the user's role), and can score incident descriptions on the fly.
+
+<img width="483" height="773" alt="image" src="https://github.com/user-attachments/assets/e71fdbd1-1dfb-477d-95cd-7bd990f974fe" />
+
+---
+
+## 🛡 What each role can do
+
+| Capability                                   | Field Ranger | Section Ranger | Ecologist | Admin |
+|----------------------------------------------|:-:|:-:|:-:|:-:|
+| Log incidents (GPS, photo, live severity tag, works offline) | ✔ | | | |
+| See own incidents                            | ✔ | | | |
+| See incidents, stats, map, alerts            | | own section | all (filter by section) | all (filter by section) |
+| Escalate / resolve / reopen incidents        | | own section | | ✔ |
+| Export CSV / print PDF                       | | own section | all | all |
+| View audit log                               | | | ✔ | ✔ |
+| Create / edit / deactivate users             | | | | ✔ |
+
+Scoping is enforced **on the server** (`src/scope.js`), not just hidden in the UI.
+
+---
+
+## How it works
+
+- **Severity Triage**: Calculated server-side (`src/triage.js`, rule-based: type + keywords). The client cannot choose severity or status. High → status *Escalated* and alert raised.
+- **Offline Queue**: If the network is down, reports are saved in `localStorage` and auto-synced later. A `client_id` makes retries idempotent, so nothing is duplicated.
+- **Built-in Chatbot**: A deterministic, offline assistant (`src/routes/chat.js`). It answers how-to questions, scores incident descriptions live, and queries the database respecting the user's scope (e.g., "how many incidents are open?").
+- **Security**: 
+  - bcrypt hashes, strict Content-Security-Policy.
+  - JWT re-checked against the DB on every request (deactivating a user takes effect immediately).
+  - Parameterised SQL, HTML-escaped output, CSV formula-injection protection.
+  - Login rate-limiting (10 fails / 15 min), image-type whitelist.
+
+---
+
+## Project layout
+
+```
+server.js              start-up
+src/app.js             express app (headers, routes, static files)
+src/db.js              schema, indexes, seed data
+src/auth.js            JWT + bcrypt helpers
+src/middleware.js      authenticate, authorize, validate, error handlers
+src/scope.js           role-based data scoping
+src/triage.js          severity rules        
+src/audit.js           audit trail
+src/routes/            auth, incidents, users, alerts, reports, audit, chat, payments
+src/payfast.js         optional PayFast signing + ITN verification
+Start-FRIMS.bat / start-frims.sh   one-click launchers
+public/                index.html, styles.css, js/api.js, js/app.js, vendor/ (Leaflet, Chart.js)
+tests/api.test.js      unit + integration tests (node:test)
+render.yaml            Render blueprint       
+.github/workflows/     CI + deploy
+```
+
+---
+
+## REST API (all JSON; except login/health need `Authorization: Bearer <token>`)
+
+| Method & path | Purpose | Roles |
+|---|---|---|
+| `POST /api/auth/login` · `GET /api/auth/me` | sign in / current user | any |
+| `GET /api/incidents` (`status,severity,type,section_id,from,to,q,limit`) | list (scoped) | any |
+| `GET /api/incidents/stats` · `GET /api/incidents/:id` | dashboard stats / detail + audit trail | any (scoped) |
+| `POST /api/incidents/triage` | severity preview | any |
+| `POST /api/incidents` | log incident | field & section ranger |
+| `PATCH /api/incidents/:id` | change status/severity | section ranger, admin |
+| `GET /api/alerts` · `PATCH /api/alerts/:id/read` · `PATCH /api/alerts/read-all` | alerts | section ranger, ecologist, admin |
+| `GET /api/reports/incidents.csv` (or `.json`) | export | section ranger, ecologist, admin |
+| `GET/POST /api/users` · `PATCH/DELETE /api/users/:id` · `GET /api/users/sections` | user admin | admin |
+| `GET /api/audit` | audit log | admin, ecologist |
+| `POST /api/chat` | AI assistant | any |
+| `GET /api/health` | health check | public |
+
+---
+
+## ☁️ CI/CD & Deploy to Render
+
+This project uses GitHub Actions for continuous integration and Render for hosting.
+
+
+1. Push to GitHub. CI runs a syntax check and the 29 tests on Node 20, 22 and 24, plus an `npm audit` security gate.
+2. In Render, choose **New → Blueprint** and select the repo (`render.yaml` configures everything; `JWT_SECRET` is generated).
+3. Copy the Render **Deploy Hook** URL into a GitHub repo secret named `RENDER_DEPLOY_HOOK`. Every push to `main` that passes all checks deploys automatically, and a post-deploy smoke test polls `/api/health` on the live site until it reports `ok`.
+4. Branching strategy: `feature/*` → PR into `develop` → PR into `main`.
+
+**Render free plan note:** the disk is ephemeral, so data and photos reset when the service restarts (demo data is re-seeded). See comments in `render.yaml` for adding a persistent disk.
+
+---
+
+## ⚠️ Before real-world use
+
+- Remove the demo-account buttons from `public/index.html` and change the seeded passwords.
+- The map needs internet access for OpenStreetMap tiles; everything else is served locally.
+- Uploaded photos are served from `/uploads/<random name>` without a login (names are unguessable); put them behind auth if that is not acceptable.
