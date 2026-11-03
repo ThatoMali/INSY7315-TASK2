@@ -6,6 +6,10 @@
 <title>SANParks FRIMS — Field Ranger &amp; Incident Management System</title>
 <link rel="icon" href="sanparks-logo.png" />
 
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
 <link rel="stylesheet" href="vendor/leaflet/leaflet.css" />
 <link rel="stylesheet" href="styles.css" />
 </head>
@@ -24,7 +28,7 @@
   <symbol id="icon-log" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></symbol>
   <symbol id="icon-mine" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></symbol>
   <symbol id="icon-user" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></symbol>
-  <symbol id="icon-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></path><circle cx="12" cy="13" r="4"></circle></symbol>
+  <symbol id="icon-camera" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"></circle><circle cx="12" cy="13" r="4"></circle></symbol>
   <symbol id="icon-locate" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><circle cx="12" cy="12" r="3"></circle></symbol>
   <symbol id="icon-lock" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></symbol>
   <symbol id="icon-settings" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></symbol>
@@ -104,19 +108,19 @@
     </header>
     <div class="user-grid">
       <article class="user-card">
-        <img src="https://images.unsplash.com/photo-1547471080-7cc2caa01a7e?w=600&auto=format&fit=crop&q=80" alt="Field Ranger in Kruger National Park">
+        <img src="https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?w=400&auto=format&fit=crop&q=80" alt="Field Ranger">
         <h3>Field Rangers</h3><p>Report incidents from the field — GPS, photo, offline queue.</p>
       </article>
       <article class="user-card">
-        <img src="https://images.unsplash.com/photo-1516426122078-c23e76319801?w=600&auto=format&fit=crop&q=80" alt="Safari patrol vehicle in Kruger">
+        <img src="https://images.unsplash.com/photo-1516426122078-c23e76319801?w=400&auto=format&fit=crop&q=80" alt="Section Ranger">
         <h3>Section Rangers</h3><p>Monitor, escalate and resolve incidents within their section.</p>
       </article>
       <article class="user-card">
-        <img src="https://images.unsplash.com/photo-1534567153574-2b12153a87f0?w=600&auto=format&fit=crop&q=80" alt="Wildlife and ecological research">
+        <img src="https://images.unsplash.com/photo-1574689211272-bc14e289e223?w=400&auto=format&fit=crop&q=80" alt="Ecologist">
         <h3>Regional Ecologists</h3><p>Read-only access across sections for cross-sectional analytics.</p>
       </article>
       <article class="user-card">
-        <img src="https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&auto=format&fit=crop&q=80" alt="Management and command operations">
+        <img src="https://images.unsplash.com/photo-1551836022-d5d88e9218df?w=400&auto=format&fit=crop&q=80" alt="Administrator">
         <h3>System Administrators</h3><p>Manage users, roles, accounts and the audit log.</p>
       </article>
     </div>
@@ -175,7 +179,7 @@
         <strong>Admin</strong><span>System control</span>
       </button>
     </div>
-    <p class="hint"></p>
+    <p class="hint">Demo build — remove the demo accounts before real use.</p>
     <p class="hint"><a href="#" id="back-to-landing">← Back to home</a></p>
   </div>
 </section>
@@ -221,12 +225,7 @@
       <label for="inc-photo" class="photo-btn" id="photo-label">
         <svg class="icon"><use href="#icon-camera"></use></svg> Attach Photo
       </label>
-      <input id="inc-photo" type="file" accept="image/*" hidden />
-      
-      <div id="photo-preview-box" class="photo-preview-box" hidden>
-        <img id="photo-preview" src="" alt="Selected Incident Photo" />
-        <button type="button" id="remove-photo-btn" class="remove-photo-btn">✕ Clear Photo</button>
-      </div>
+      <input id="inc-photo" type="file" accept="image/*" capture="environment" hidden />
 
       <label>AI-assisted severity (rule-based)</label>
       <div id="ai-tag" class="ai-tag ai-idle">Awaiting input…</div>
@@ -303,7 +302,6 @@
       <div class="stat-card"><div class="stat-num" id="stat-total">0</div><div class="stat-label">Total</div></div>
     </div>
 
-    <!-- ALERTS PANEL -->
     <div class="panel" id="alerts-panel">
       <div class="panel-head">
         <h3>High-Severity Alerts <span id="alert-count" class="count-pill zero">0</span></h3>
@@ -319,10 +317,7 @@
 
     <div class="panel">
       <h3>Incidents by Type</h3>
-      <!-- FIXED: Added wrapper to prevent the chart from stretching -->
-      <div class="chart-container">
-        <canvas id="type-chart"></canvas>
-      </div>
+      <canvas id="type-chart" height="90"></canvas>
     </div>
 
     <div class="panel">
@@ -366,6 +361,18 @@
             <span id="font-size-label">100%</span>
             <button type="button" class="ghost-btn" id="font-increase">A+</button>
           </div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <h3>Language</h3>
+        <p class="text-muted" style="margin-bottom:16px;">Select your preferred language for the user interface.</p>
+        <div class="settings-row">
+          <select id="lang-select" class="ghost-select" style="width:200px;">
+            <option value="en">English</option>
+            <option value="af">Afrikaans</option>
+            <option value="zu">isiZulu</option>
+          </select>
         </div>
       </div>
 
@@ -489,6 +496,8 @@
       <div class="payment-actions" id="issue-fine-box" hidden>
         <label for="issue-fine-amount" style="font-size:.85rem;">Fine amount (Rand)</label>
         <input type="number" id="issue-fine-amount" min="1" max="50000" step="0.01" placeholder="e.g. 500.00" inputmode="decimal">
+        <p class="payment-note" id="issue-fine-hint"
+           style="margin:2px 0 6px; width:100%; font-style:normal; color:var(--san-orange);"></p>
         <button type="button" class="btn-solid" id="issue-fine-btn">Issue fine</button>
         <p class="payment-note" id="issue-fine-error" style="color:#b42318;" role="alert"></p>
       </div>
@@ -527,7 +536,7 @@
       <p class="form-error" id="gateway-error" role="alert"></p>
     </div>
     <div class="modal-actions">
-      <button type="button" class="ghost-btn" onclick="document.getElementById('gateway-modal').classList.remove('open')">Cancel</button>
+      <button type="button" class="ghost-btn" id="gateway-cancel-btn">Cancel</button>
       <button type="button" class="btn-solid pay-btn" id="process-payment-btn">Continue to PayFast</button>
     </div>
   </div>
@@ -597,7 +606,7 @@
   <header class="chat-head">
     <div>
       <h3 id="chat-title">FRIMS Assistant</h3>
-      <p class="chat-sub" id="chat-role-sub">Ask about logging, severity, roles, or your incidents</p>
+      <p class="chat-sub">Ask about logging, severity, roles, or your incidents</p>
     </div>
     <button type="button" id="chat-close" class="chat-close" aria-label="Close chat">✕</button>
   </header>
@@ -610,8 +619,6 @@
 </div>
 
 <div id="toast" class="toast" role="status" aria-live="polite"></div>
-
-<!-- ... all your divs and sections above ... -->
 
 <script src="vendor/leaflet/leaflet.js"></script>
 <script src="vendor/chart.umd.js"></script>
